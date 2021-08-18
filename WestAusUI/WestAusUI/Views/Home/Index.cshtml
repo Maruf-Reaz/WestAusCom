@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@section Sole {
+    <style>
+        .gcb-table {
+            padding: 3px 10px !important;
+        }
+    </style>
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header p-3 border-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-left">
+                                <h3 class="mb-0 skewed skewed-green d-inline-block text-white ls-1 text-uppercase">Customers</h3>
+                            </div>
+                        </div>
+                        <div class="col-6 m-auto">
+                            <div class="text-right">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-custom">
+                            <tr>
+                                <th class="text-center align-middle">Name</th>
+                                <th class="text-center align-middle">Address</th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="populateTableBody"></tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+
+
+        $(document).ready(function () {
+            var endpoint = "https://localhost:44303/api/customers";
+            //var sendData = "{ 'id':'9','name' : 'Ajax Customer Edited', 'address':'Ajax Customer Address'}"
+            $.ajax({
+                url: endpoint,
+                contentType: "application/json",
+                type: "GET",
+                //data: sendData,
+                dataType: 'json',
+                success: function (result) {
+                    if (result != null) {
+                        $.each(result, function (index, object) {
+                            $("#populateTableBody").append('<tr><td class="text-center align-middle customerName">' + object.name + '</td><td class="text-center align-middle customerAddress">' + object.address + '</td></tr>');
+                        });
+                    }
+                    else {
+                        $("#populateTableBody").append('<tr>  <td colspan="3" class="text-center align-middle customerName">No Data Found</td></tr>');
+                    }
+                }
+            })
+        });
+
+    </script>
+}

@@ -1,0 +1,191 @@
+﻿@{
+    ViewData["Title"] = "Edit Contact";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header p-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 id="customerNameLabel" class="mb-0 skewed skewed-yellow  d-inline-block text-uppercase ls-1 text-white">Customer :</h3>
+                </div>
+
+            </div>
+        </div>
+        <div class="card-body p-3">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+
+                        <label class="form-control-label text-dark ls-1 text-uppercase">Name</label>
+                        <input class="form-control" id="contactName" />
+                        <input type="hidden" id="customerId" value="@ViewBag.CustomerId" />
+                        <input type="hidden" id="contactId" value="@ViewBag.ContactId" />
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-control-label text-dark ls-1 text-uppercase">Contact Email</label>
+                        <input class="form-control" id="contactEmail" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-control-label text-dark ls-1 text-uppercase">Contact Cell</label>
+                        <input class="form-control" id="contactCell" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-control-label text-dark ls-1 text-uppercase">Contact Tel.</label>
+                        <input class="form-control" id="contactTell" />
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="form-group mb-0">
+                        <input type="button" value="Save" id="editButton" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/datatable/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var customerId = $("#customerId").val();
+            var endpoint = "https://localhost:44303/api/customers/" + customerId;
+
+            $.ajax({
+                url: endpoint,
+                contentType: "application/json",
+                type: "GET",
+                dataType: 'json',
+                success: function (result) {
+                    if (result != null) {
+                        $("#customerNameLabel").append(" " + result.name);
+                    }
+
+                }
+            })
+            var contactId = $("#contactId").val();
+            var endpoint = "https://localhost:44303/api/contacts/" + contactId;
+
+            $.ajax({
+                url: endpoint,
+                contentType: "application/json",
+                type: "GET",
+                dataType: 'json',
+                success: function (result) {
+                    if (result != null) {
+                        $("#contactName").val(result.name);
+                        $("#contactEmail").val(result.email);
+                        $("#contactCell").val(result.cellPhoneNumber);
+                        $("#contactTell").val(result.telePhoneNumber);
+                    }
+                   
+                }
+            })
+
+
+            $('#editButton').on('click', function () {
+               
+                var contactName=  $("#contactName").val();
+                var contactEmail =$("#contactEmail").val();
+                var contactCell = $("#contactCell").val();
+                var contactTell = $("#contactTell").val();
+                if (contactName == "" || contactEmail == "" || contactCell == "" || contactTell == "" || !isEmailAddress(contactEmail)) {
+
+                    if (!isEmailAddress(contactEmail)) {
+                        $.notify({
+                            title: 'Error !!!',
+                            icon: 'fa fa-times',
+                            html: true,
+                            message: 'Fill Email Up Correctly !!!'
+                        },
+                            {
+                                type: 'danger',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 1000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                    else {
+                        $.notify({
+                            title: 'Error !!!',
+                            icon: 'fa fa-times',
+                            html: true,
+                            message: 'Fill Up All The Fields Correctly !!!'
+                        },
+                            {
+                                type: 'danger',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 1000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                }
+                else {
+                    var endpoint = "https://localhost:44303/api/contacts"
+                    var sendData = '{ "id" : "' + contactId + '","name" : "' + contactName + '","email" : "' + contactEmail + '","cellPhoneNumber" : "' + contactCell + '","telePhoneNumber" : "' + contactTell + '", "customerId":"' + customerId + '"}'
+                    $.ajax({
+                        url: endpoint,
+                        contentType: "application/json",
+                        type: "PATCH",
+                        data: sendData,
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result != null) {
+                                location.href = '/Home/ContactIndex/?customerId=' + customerId;
+                            }
+                        }
+                    })
+                }
+                
+
+
+            });
+        });
+
+        function isEmailAddress(email) {
+            var regexEmail = /\w+([-+.']\w+)*@@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+
+
+
+            if (regexEmail.test(email)) {
+
+                return true;
+            }
+            else {
+
+                return false;
+
+
+            }
+        }
+
+
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

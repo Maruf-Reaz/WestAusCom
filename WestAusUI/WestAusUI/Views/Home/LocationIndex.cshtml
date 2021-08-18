@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewData["Title"] = "Location List";
+}
+
+@section Sole {
+    <style>
+
+
+        .table tr th:last-child {
+            width: 100px;
+        }
+
+        .table tr th {
+            text-align: center;
+        }
+
+        .table tr td {
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="container-fluid mt-4">
+    <div class="card animated fadeIn overflow-hidden">
+        <div class="card-header p-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 id="customerNameLabel" class="mb-0 skewed skewed-yellow  d-inline-block text-uppercase ls-1 text-white">Customer :</h3>
+                </div>
+                <div class="col text-right">
+                    <a asp-action="CreateLocation" asp-route-customerId="@ViewBag.CustomerId" class="btn btn-create">New Location</a>
+                    <input type="hidden"  name="name" id="customerId" value="@ViewBag.CustomerId" />
+                </div>
+            </div>
+        </div>
+        <div class="card-body px-0 pb-2">
+            <div>
+
+                <table class="table align-items-center table-striped table-bordered" id="datatable-basic">
+                    <thead class="thead-light">
+                        <tr>
+
+                            <th>
+                                Location Details
+                            </th>
+                            
+                            <th class="text-center">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="populateTableBody"></tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/datatable/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var customerId = $("#customerId").val();
+            var endpoint = "https://localhost:44303/api/customers/" + customerId;
+
+            $.ajax({
+                url: endpoint,
+                contentType: "application/json",
+                type: "GET",
+                dataType: 'json',
+                success: function (result) {
+                    if (result != null) {
+                        $("#customerNameLabel").append(" "+result.name);
+                    }
+
+                }
+            })
+
+
+            var endpoint = "https://localhost:44303/api/locations/customer/" + customerId;
+            
+            $.ajax({
+                url: endpoint,
+                contentType: "application/json",
+                type: "GET",
+                dataType: 'json',
+                success: function (result) {
+                  
+                        $.each(result, function (index, object) {
+
+                            $("#populateTableBody").append('<tr><td class="locationDetailsT">' + object.locationDetails + '</td></td><td class="text-center"><div class="btn-group"> <a class="btn btn-greenyellow btn-sm" href="/Home/EditLocation?locationId=' + object.id + '&customerId=' + object.customerId + '">Edit</a><input type="button" class="btn btn-danger btn-sm deleteButton" value="Delete" /><input type="hidden" class="locationId" value="' + object.id + '" /><input type="hidden" class="locationDetails" value="' + object.locationDetails + '" /><input type="hidden" class="customerId" value="' + object.customerId + '" /></div></td></tr>');
+                        });
+                  
+
+
+                    $('.deleteButton').on('click', function () {
+                        var row = $(this).closest('tr');
+                        var customerId = row.find('.customerId').val();
+                        var locationId = row.find('.locationId').val();
+                        var locationDetails = row.find('.locationDetails').val();
+                        
+                        var endpoint = "https://localhost:44303/api/locations"
+                        var sendData = '{ "id":"' + locationId + '","locationDetails" : "' + locationDetails + '", "customerId":"' + customerId + '"}'
+                        
+                        $.ajax({
+                            url: endpoint,
+                            contentType: "application/json",
+                            type: "DELETE",
+                            data: sendData,
+                            dataType: 'json',
+                            success: function (result) {
+                                if (result != null) {
+                                    location.href = '/Home/LocationIndex/?customerId=' + customerId;
+                                }
+                            }
+                        })
+
+
+                    });
+                }
+            })
+            
+            
+
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

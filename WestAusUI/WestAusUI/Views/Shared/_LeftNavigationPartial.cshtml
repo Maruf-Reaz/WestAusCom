@@ -1,0 +1,40 @@
+﻿
+<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light" id="sidenav-main">
+    <div class="scrollbar-inner">
+        <div class="sidenav-header d-flex align-items-center">
+            <a class="navbar-brand" asp-controller="Account" asp-action="Public">
+
+                <h1 style="margin-top:30px !important;  margin-bottom:30px!important;" class="text-white">WESTAUS</h1>
+            </a>
+            <div class="mx-auto">
+                <div class="sidenav-toggler active" data-action="sidenav-unpin" data-target="#sidenav-main">
+                    <div class="sidenav-toggler-inner">
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-inner">
+            <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+                <ul class="navbar-nav">
+
+                    <li class="nav-item nav_level0">
+                        <a class="nav-link position-relative" asp-controller="Home" asp-action="Index">
+                            <i class="far fa-tachometer-alt text-gray"></i>
+                            <span class="nav-link-text text-nowrap text-dark">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav_level0">
+                        <a class="nav-link position-relative" asp-controller="Home" asp-action="CustomerIndex">
+                            <i class="fa fa-users text-gray"></i>
+                            <span class="nav-link-text text-nowrap text-dark">Customers</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
